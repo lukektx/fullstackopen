@@ -1,0 +1,2 @@
+    browser->server POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    browser->server data from textarea sent with application/json content head
