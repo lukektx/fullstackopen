@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Numbers from './components/Numbers'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import numberService from './services/numbers'
 
 const App = () => {
@@ -10,6 +11,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
   const hook = () => {
     numberService
@@ -38,6 +41,10 @@ const App = () => {
       numberService
         .create(newPerson)
         .then(response => {
+          setSuccessMessage(`Successfully added ${newName}`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
           setPeople(people.concat(response))
           setNewName('')
           setNewNumber('')
@@ -75,13 +82,25 @@ const App = () => {
           .then(() => {
             setPeople(people.filter(p => p.id !== id))
           })
+          .catch(() => {
+            numberService
+            .getall()
+            .then((response) => {
+              setPeople(response)
+            })
+            setErrorMessage(`Can't delete ${name} (already been deleted)`)
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+          })
     }
 }
 
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification message={errorMessage} style='error' />
+      <Notification message={successMessage} style='success' /> 
       <Filter filter={filter} handleFilterInput={handleFilterInput}/>
 
       <h3>Add a new entry</h3>
